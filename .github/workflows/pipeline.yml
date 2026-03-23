@@ -5,19 +5,16 @@ on:
 
 jobs:
 
-  # ----------------- DEV -----------------
   dev:
     uses: ./.github/workflows/terraform.yml
     with:
       env: dev
     secrets: inherit
 
-  # ----------------- STAGING -----------------
   staging:
     needs: dev
     runs-on: ubuntu-latest
-    environment: staging   # 👈 approval happens here
-
+    environment: staging   # ✅ this triggers approval
     defaults:
       run:
         working-directory: terraform
@@ -42,12 +39,10 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve -var-file=../env/staging.tfvars
 
-  # ----------------- PROD -----------------
   prod:
     needs: staging
     runs-on: ubuntu-latest
-    environment: prod   # 👈 approval happens here
-
+    environment: prod   # ✅ this triggers approval
     defaults:
       run:
         working-directory: terraform
