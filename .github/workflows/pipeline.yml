@@ -1,13 +1,10 @@
-name: Terraform Multi-Env Pipeline
+name: Terraform Pipeline
 on:
   workflow_dispatch:
 
 jobs:
   dev:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: terraform
     steps:
       - uses: actions/checkout@v4
       - uses: azure/login@v2
@@ -21,10 +18,7 @@ jobs:
   staging:
     needs: dev
     runs-on: ubuntu-latest
-    environment: staging   # 🔐 approval triggers here
-    defaults:
-      run:
-        working-directory: terraform
+    environment: staging   # 🔐 approval works here
     steps:
       - uses: actions/checkout@v4
       - uses: azure/login@v2
@@ -38,10 +32,7 @@ jobs:
   prod:
     needs: staging
     runs-on: ubuntu-latest
-    environment: prod   # 🔐 approval triggers here
-    defaults:
-      run:
-        working-directory: terraform
+    environment: prod      # 🔐 approval works here
     steps:
       - uses: actions/checkout@v4
       - uses: azure/login@v2
