@@ -5,39 +5,27 @@ on:
 
 jobs:
 
-  # DEV (auto)
+  # 🔹 DEV (auto)
   dev:
     uses: ./.github/workflows/terraform.yml
     with:
       env: dev
     secrets: inherit
 
-  # STAGING (approval required)
+  # 🔹 STAGING (approval required)
   staging:
     needs: dev
-    runs-on: ubuntu-latest
-    environment: staging
+    uses: ./.github/workflows/terraform.yml
+    with:
+      env: staging
+    secrets: inherit
+    environment: staging   # ✅ approval works here
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run Terraform (staging)
-        uses: ./.github/workflows/terraform.yml
-        with:
-          env: staging
-        secrets: inherit
-
-  # PROD (approval required)
+  # 🔹 PROD (approval required)
   prod:
     needs: staging
-    runs-on: ubuntu-latest
-    environment: prod
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run Terraform (prod)
-        uses: ./.github/workflows/terraform.yml
-        with:
-          env: prod
-        secrets: inherit
+    uses: ./.github/workflows/terraform.yml
+    with:
+      env: prod
+    secrets: inherit
+    environment: prod   # ✅ approval works here
