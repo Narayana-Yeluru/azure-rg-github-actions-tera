@@ -1,0 +1,43 @@
+name: Terraform Multi-Env Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  # 🔹 DEV (auto)
+  dev:
+    uses: ./.github/workflows/terraform.yml
+    with:
+      env: dev
+    secrets: inherit
+
+  # 🔹 STAGING (approval required)
+  staging:
+    needs: dev
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Terraform (staging)
+        uses: ./.github/workflows/terraform.yml
+        with:
+          env: staging
+        secrets: inherit
+
+  # 🔹 PROD (approval required)
+  prod:
+    needs: staging
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Terraform (prod)
+        uses: ./.github/workflows/terraform.yml
+        with:
+          env: prod
+        secrets: inherit
