@@ -1,56 +1,53 @@
 name: Terraform Multi-Env Pipeline
-
 on:
   workflow_dispatch:
 
 jobs:
-
   dev:
-    uses: ./.github/workflows/terraform.yml
-    with:
-      env: dev
-    secrets: inherit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+      - run: terraform plan -var-file=../env/dev.tfvars
+      - run: terraform apply -auto-approve -var-file=../env/dev.tfvars
 
   staging:
     needs: dev
     runs-on: ubuntu-latest
-    environment: staging   # ✅ this triggers approval
+    environment: staging   # 🔐 approval triggers here
     defaults:
       run:
         working-directory: terraform
     steps:
       - uses: actions/checkout@v4
-      - name: Azure Login
-        uses: azure/login@v2
+      - uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-      - name: Terraform Init
-        run: terraform init
-      - name: Terraform Plan
-        run: terraform plan -var-file=../env/staging.tfvars
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -var-file=../env/staging.tfvars
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+      - run: terraform plan -var-file=../env/staging.tfvars
+      - run: terraform apply -auto-approve -var-file=../env/staging.tfvars
 
   prod:
     needs: staging
     runs-on: ubuntu-latest
-    environment: prod   # ✅ this triggers approval
+    environment: prod   # 🔐 approval triggers here
     defaults:
       run:
         working-directory: terraform
     steps:
       - uses: actions/checkout@v4
-      - name: Azure Login
-        uses: azure/login@v2
+      - uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-      - name: Terraform Init
-        run: terraform init
-      - name: Terraform Plan
-        run: terraform plan -var-file=../env/prod.tfvars
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -var-file=../env/prod.tfvars
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+      - run: terraform plan -var-file=../env/prod.tfvars
+      - run: terraform apply -auto-approve -var-file=../env/prod.tfvars
