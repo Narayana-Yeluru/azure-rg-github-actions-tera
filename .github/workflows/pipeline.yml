@@ -5,14 +5,14 @@ on:
 
 jobs:
 
-  # 🔹 DEV (auto)
+  # DEV (auto)
   dev:
     uses: ./.github/workflows/terraform.yml
     with:
       env: dev
     secrets: inherit
 
-  # 🔹 STAGING (approval required)
+  # STAGING (approval required)
   staging:
     needs: dev
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
           env: staging
         secrets: inherit
 
-  # 🔹 PROD (approval required)
+  # PROD (approval required)
   prod:
     needs: staging
     runs-on: ubuntu-latest
